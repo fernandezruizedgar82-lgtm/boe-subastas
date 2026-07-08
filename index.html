@@ -246,9 +246,10 @@ a:hover{text-decoration:underline}
 /* ============ MAIN ============ */
 .main{
   display:grid;
-  grid-template-rows:auto auto 1fr;
+  grid-template-rows:auto auto auto 1fr;
   overflow:hidden;
   background:var(--bg);
+  min-height:0;
 }
 
 /* KPI strip */
@@ -350,6 +351,7 @@ a:hover{text-decoration:underline}
   overflow:auto;
   padding:0;
   position:relative;
+  min-height:0;
 }
 .content::-webkit-scrollbar{width:10px;height:10px}
 .content::-webkit-scrollbar-track{background:var(--bg)}
@@ -1779,7 +1781,7 @@ function renderMap(el) {
         </div>`).join('')}
     </div>
   </div>`;
-  setTimeout(() => initMap(), 40);
+  setTimeout(() => initMap(), 60);
 }
 
 function initMap() {
@@ -1834,6 +1836,10 @@ function initMap() {
     const bounds = L.latLngBounds(STATE.filtered.map(r => [r.lat, r.lon]));
     map.fitBounds(bounds, {padding:[40,40], maxZoom:10});
   }
+
+  // Critical: recalculate map size after the container becomes visible.
+  // Without this, a map initialized in a hidden/zero-size container renders black.
+  setTimeout(() => map.invalidateSize(), 80);
 }
 
 /* ================================================================
